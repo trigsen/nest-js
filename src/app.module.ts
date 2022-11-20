@@ -3,7 +3,6 @@ import { APP_GUARD } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UsersModule } from './users/users.module';
@@ -19,11 +18,12 @@ import { UsersModule } from './users/users.module';
 	imports: [
 		AuthModule,
 		UsersModule,
+		// @ TODO move to env pass and username
 		MongooseModule.forRoot(
 			'mongodb+srv://cluster0:cluster0Pass@cluster0.npduqgm.mongodb.net/nestjs-test?retryWrites=true&w=majority'
 		),
 	],
 	controllers: [AppController],
-	providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
+	providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {}
