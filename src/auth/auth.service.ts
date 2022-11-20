@@ -1,8 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import {
+	HttpException,
+	Injectable,
+	InternalServerErrorException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UserDto } from '../users/dto/user.dto';
 import { UsersService } from '../users/users.service';
+
+import { AuthUserDto } from './dto/auth-user.dto';
+import { AuthDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -11,17 +18,31 @@ export class AuthService {
 		private jwtService: JwtService
 	) {}
 
-	async login(user: UserDto) {
-		const payload = { username: user.username, sub: user.userId };
+	login({ username, id }: UserDto) {
 		return {
-			access_token: this.jwtService.sign(payload),
+			access_token: this.jwtService.sign({
+				username,
+				sub: id,
+			}),
 		};
 	}
 
-	async validateUser(
-		username: string,
-		password: string
-	): Promise<Omit<UserDto, 'password'> | null> {
+	async register({ username, password }: AuthDto) {
+		console.log('here', username);
+		const user = await this.usersService.findOne(username);
+		console.log({ usser: user });
+		if (user) {
+			throw new HttpException('User already exists', 500);
+		}
+
+		const newUser = await this.usersService.create(username, password);
+		return this.login(newUser);
+	}
+
+	async validateUser({
+		username,
+		password,
+	}: AuthDto): Promise<AuthUserDto | null> {
 		const user = await this.usersService.findOne(username);
 		if (user && user.password === password) {
 			const { password, ...result } = user;
