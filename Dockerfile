@@ -1,8 +1,8 @@
-FROM node:14 As development
+FROM node:16.17.0-alpine As development
 
 WORKDIR /usr/src/app
 
-COPY package.json yarn ./
+COPY package.json yarn.lock ./
 
 RUN yarn --frozen-lockfile
 
@@ -12,5 +12,4 @@ RUN yarn run build
 
 EXPOSE 3000
 
-CMD ["ls"]
-#CMD ["node", "dist/main.js"]
+CMD ["node", "dist/main.js"]
