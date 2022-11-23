@@ -1,9 +1,10 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { CryptoService } from '../crypto/crypto.service';
 import { UserDto } from '../users/dto/user.dto';
 import { UsersService } from '../users/users.service';
+
+import { CryptoService } from '@app/crypto';
 
 import { AuthUserDto } from './dto/auth-user.dto';
 import { AuthDto } from './dto/auth.dto';

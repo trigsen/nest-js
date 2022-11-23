@@ -7,11 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UsersModule } from './users/users.module';
 
-// @ TODO add bcrypt for passwords
+// @ TODO add docker
 // @ TODO move necessary data to .env
 // @ TODO add repository pattern*
 // @ TODO add refresh token*
-// @ TODO add docker
 // @ TODO add redis
 
 @Module({

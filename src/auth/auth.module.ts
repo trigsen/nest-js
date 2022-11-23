@@ -3,8 +3,9 @@ import { Reflector } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
-import { CryptoModule } from '../crypto/crypto.module';
 import { UsersModule } from '../users/users.module';
+
+import { CryptoModule } from '@app/crypto';
 
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
