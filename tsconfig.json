@@ -20,6 +20,6 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@app/crypto": ["libs/crypto/src"],
-    }
+    },
   },
 }

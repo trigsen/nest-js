@@ -1,33 +1,49 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { UserDto } from '../users/dto/user.dto';
-import { UsersService } from '../users/users.service';
+import { UsersDomain } from '../users/domain';
 
 import { CryptoService } from '@app/crypto';
 
 import { AuthUserDto } from './dto/auth-user.dto';
 import { AuthDto } from './dto/auth.dto';
+import { UserJwtPayload } from './interfaces/user-jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
 	constructor(
-		private usersService: UsersService,
+		private usersService: UsersDomain,
 		private jwtService: JwtService,
 		private cryptoService: CryptoService
 	) {}
 
-	login({ username, id }: UserDto) {
+	async generateAccessToken(username: string, id: string) {
+		return this.jwtService.signAsync({
+			username,
+			sub: id,
+		});
+	}
+
+	async getUserFromJwtToken(jwtToken: UserJwtPayload) {
+		return this.usersService.findOneById(jwtToken.sub);
+	}
+
+	async login({ username }: any) {
+		const user = await this.usersService.findOneByUsername(username);
+
+		if (!user) {
+			throw new HttpException("User doesn't exist", 500);
+		}
+
+		const accessToken = await this.generateAccessToken(user.username, user.id);
+
 		return {
-			access_token: this.jwtService.sign({
-				username,
-				sub: id,
-			}),
+			access_token: accessToken,
 		};
 	}
 
 	async register({ username, password }: AuthDto) {
-		const user = await this.usersService.findOne(username);
+		const user = await this.usersService.findOneByUsername(username);
 
 		if (user) {
 			throw new HttpException('User already exists', 500);
@@ -35,16 +51,23 @@ export class AuthService {
 
 		const encodedPassword = await this.cryptoService.encodePassword(password);
 
-		const newUser = await this.usersService.create(username, encodedPassword);
-		return this.login(newUser);
+		const { username: newUserName, id } = await this.usersService.create(
+			username,
+			encodedPassword
+		);
+
+		const accessToken = await this.generateAccessToken(newUserName, id);
+
+		return {
+			access_token: accessToken,
+		};
 	}
 
 	async validateUser({
 		username,
 		password: userPassword,
 	}: AuthDto): Promise<AuthUserDto | null> {
-		const user = await this.usersService.findOne(username);
-
+		const user = await this.usersService.findOneByUsername(username);
 		if (user) {
 			const isTheSamePassword = await this.cryptoService.comparePasswords(
 				userPassword,

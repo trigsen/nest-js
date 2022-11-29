@@ -36,7 +36,7 @@
     "@typescript-eslint/promise-function-async": 2,
     "no-return-await": 0,
     "@typescript-eslint/return-await": 1,
-    "@typescript-eslint/require-await": 1,
+    "@typescript-eslint/require-await": 2,
     "@typescript-eslint/consistent-generic-constructors": 1,
     "@typescript-eslint/consistent-type-definitions": 2,
     "@typescript-eslint/member-ordering": [
