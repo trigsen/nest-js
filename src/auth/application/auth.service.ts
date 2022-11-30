@@ -1,48 +1,40 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-
-import { UsersDomain } from '../users/domain';
-
+import { UsersDomain } from '../../users/domain';
 import { CryptoService } from '@app/crypto';
-
-import { AuthUserDto } from './dto/auth-user.dto';
-import { AuthDto } from './dto/auth.dto';
-import { UserJwtPayload } from './interfaces/user-jwt-payload.interface';
+import {
+	LoginUserParameters,
+	RegisterUserParameters,
+	ValidateUserParameters,
+	ValidateUserResult,
+} from './auth-service.types';
+import { AuthDomain } from '../domain';
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private usersService: UsersDomain,
-		private jwtService: JwtService,
-		private cryptoService: CryptoService
+		private cryptoService: CryptoService,
+		private authDomain: AuthDomain
 	) {}
 
-	async generateAccessToken(username: string, id: string) {
-		return this.jwtService.signAsync({
-			username,
-			sub: id,
-		});
-	}
-
-	async getUserFromJwtToken(jwtToken: UserJwtPayload) {
-		return this.usersService.findOneById(jwtToken.sub);
-	}
-
-	async login({ username }: any) {
+	async login({ username }: LoginUserParameters) {
 		const user = await this.usersService.findOneByUsername(username);
 
 		if (!user) {
 			throw new HttpException("User doesn't exist", 500);
 		}
 
-		const accessToken = await this.generateAccessToken(user.username, user.id);
+		const accessToken = await this.authDomain.generateAccessToken(
+			user.username,
+			user.id
+		);
 
 		return {
 			access_token: accessToken,
 		};
 	}
 
-	async register({ username, password }: AuthDto) {
+	async register({ username, password }: RegisterUserParameters) {
 		const user = await this.usersService.findOneByUsername(username);
 
 		if (user) {
@@ -56,7 +48,10 @@ export class AuthService {
 			encodedPassword
 		);
 
-		const accessToken = await this.generateAccessToken(newUserName, id);
+		const accessToken = await this.authDomain.generateAccessToken(
+			newUserName,
+			id
+		);
 
 		return {
 			access_token: accessToken,
@@ -66,7 +61,7 @@ export class AuthService {
 	async validateUser({
 		username,
 		password: userPassword,
-	}: AuthDto): Promise<AuthUserDto | null> {
+	}: ValidateUserParameters): Promise<ValidateUserResult | null> {
 		const user = await this.usersService.findOneByUsername(username);
 		if (user) {
 			const isTheSamePassword = await this.cryptoService.comparePasswords(

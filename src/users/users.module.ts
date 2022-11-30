@@ -17,6 +17,6 @@ import { UsersController } from './presentation';
 		UsersDomain,
 		UsersService,
 	],
-	exports: [UsersDomain],
+	exports: [UsersDomain, UsersService],
 })
 export class UsersModule {}

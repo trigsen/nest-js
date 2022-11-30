@@ -22,7 +22,8 @@ export class ChatService {
 				secret: 'secret',
 			});
 
-			return this.authService.getUserFromJwtToken(jwtPayload);
+			return null;
+			// return this.usersService.findOneById(id);
 		}
 
 		throw new WsException('Invalid credentials.');

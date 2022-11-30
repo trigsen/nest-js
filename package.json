@@ -97,7 +97,8 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/crypto(|/.*)$": "<rootDir>/libs/crypto/src/$1"
+      "^@app/crypto(|/.*)$": "<rootDir>/libs/crypto/src/$1",
+      "^@app/core(|/.*)$": "<rootDir>/libs/core/src/$1"
     }
   }
 }

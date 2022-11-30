@@ -7,9 +7,9 @@ import { UsersModule } from '../users/users.module';
 
 import { CryptoModule } from '@app/crypto';
 
-import { AuthService } from './auth.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { LocalStrategy } from './strategies/local.strategy';
+import { JwtStrategy, LocalStrategy, AuthService } from './application';
+import { AuthDomain } from './domain';
+import { AuthController } from './presentation';
 
 @Module({
 	imports: [
@@ -22,7 +22,8 @@ import { LocalStrategy } from './strategies/local.strategy';
 		Reflector,
 		CryptoModule,
 	],
-	providers: [AuthService, LocalStrategy, JwtStrategy],
+	providers: [AuthService, AuthDomain, LocalStrategy, JwtStrategy],
 	exports: [AuthService],
+	controllers: [AuthController],
 })
 export class AuthModule {}

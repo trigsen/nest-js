@@ -19,7 +19,12 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/crypto": ["libs/crypto/src"],
-    },
-  },
+      "@app/crypto": [
+        "libs/crypto/src"
+      ],
+      "@app/core": [
+        "libs/core/src"
+      ],
+    }
+  }
 }

@@ -1,12 +1,10 @@
+import { JwtAuthGuard } from '@app/core';
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UsersModule } from './users/users.module';
-import { UsersController } from './users/presentation';
 
 // @ TODO add docker
 // @ TODO move necessary data to .env
@@ -29,7 +27,6 @@ import { UsersController } from './users/presentation';
 		AuthModule,
 		UsersModule,
 	],
-	controllers: [AppController],
 	providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {}
