@@ -9,7 +9,7 @@ export class UsersController {
 
 	@Get('profile')
 	async getProfile(@Req() request: Request) {
-		const user = await this.usersService.getUser(request.user.id);
+		const user = await this.usersService.getUserById(request.user.id);
 
 		if (!user) {
 			throw new HttpException("User doesn't exist", 500);

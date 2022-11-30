@@ -6,7 +6,15 @@ import { UsersDomain } from '../domain';
 export class UsersService {
 	constructor(private readonly usersDomain: UsersDomain) {}
 
-	getUser(id: string) {
-		return this.usersDomain.findOneById(id);
+	async createUser(username: string, password: string) {
+		return this.usersDomain.createUser(username, password);
+	}
+
+	async getUserById(id: string) {
+		return this.usersDomain.getUserById(id);
+	}
+
+	async getUserByUsername(username: string) {
+		return this.usersDomain.getUserByUsername(username);
 	}
 }
