@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import {ConfigModule} from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -7,22 +8,21 @@ import { GuardsModule } from "../libs/core/src/guards.module";
 
 import { JwtAuthGuard } from "@app/core";
 
-import { AuthModule } from './auth/auth.module';
-import { ChatModule } from './chat/chat.module';
-import { UsersModule } from './users/users.module';
+import {configuration, MongoConfigurationService, validate} from "./config";
+import { AuthModule } from './modules/auth/auth.module';
+import { ChatModule } from './modules/chat/chat.module';
+import { UsersModule } from './modules/users/users.module';
 
-// @ TODO add docker
-// @ TODO move necessary data to .env
-// @ TODO add repository pattern*
 // @ TODO add refresh token*
 // @ TODO add redis
 
 @Module({
 	imports: [
-		// @ TODO move to env pass and username
-		MongooseModule.forRoot(
-			'mongodb+srv://cluster0:cluster0Pass@cluster0.npduqgm.mongodb.net/nestjs-test',
-		),
+		ConfigModule.forRoot({ isGlobal: true, load: configuration, validate }),
+		MongooseModule.forRootAsync({ useClass: MongoConfigurationService }),
+		// MongooseModule.forRoot(
+		// 	'mongodb+srv://cluster0:cluster0Pass@cluster0.npduqgm.mongodb.net/nestjs-test',
+		// ),
 		AuthModule,
 		UsersModule,
 		ChatModule,

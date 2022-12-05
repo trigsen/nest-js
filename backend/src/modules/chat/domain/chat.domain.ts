@@ -41,7 +41,6 @@ export class ChatDomain {
 			const [, token] = socket.handshake.headers.authorization.split(' ');
 
 			if (token) {
-				// @ TODO move to .env
 				const jwtPayload = await this.authDomain.verifyAccessToken(token)
 
 				if (jwtPayload.sub) {
