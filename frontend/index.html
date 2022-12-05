@@ -1,0 +1,28 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body style="display: flex; flex-direction: column;">
+<div>
+    <input id="token" type="text" placeholder="token" />
+    <button onclick="handleSocketConnection()">Connect socket</button>
+</div>
+<hr/>
+<div>
+    <ul id="messages"></ul>
+</div>
+
+<div>
+    <input id="textInput" type="text" placeholder="message" />
+    <button onclick="handleSubmitNewMessage()">Submit</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+<script src="./socket.js"></script>
+</body>
+
+</html>
