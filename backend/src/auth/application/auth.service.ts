@@ -27,6 +27,7 @@ export class AuthService {
 			throw new HttpException("User doesn't exist", 500);
 		}
 
+
 		const accessToken = await this.authDomain.generateAccessToken(
 			user.username,
 			user.id
@@ -39,7 +40,6 @@ export class AuthService {
 
 	async register({ username, password }: RegisterUserParameters) {
 		const user = await this.usersService.getUserByUsername(username);
-		console.log({ user, username })
 		if (user) {
 			throw new HttpException('User already exists', 500);
 		}
@@ -65,7 +65,7 @@ export class AuthService {
 		username,
 		password: userPassword,
 	}: ValidateUserParameters): Promise<ValidateUserResult | null> {
-		const user = await this.usersService.getUserByUsername(username);
+		const user = await this.usersService.getUserByUsernameWithPassword(username);
 		if (user) {
 			const isTheSamePassword = await this.cryptoService.comparePasswords(
 				userPassword,
@@ -73,8 +73,8 @@ export class AuthService {
 			);
 
 			if (isTheSamePassword) {
-				const { password, ...result } = user;
-				return result;
+				const { password, ...userWithoutPassword } = user;
+				return userWithoutPassword;
 			}
 		}
 		return null;

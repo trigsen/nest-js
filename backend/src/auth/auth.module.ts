@@ -24,7 +24,7 @@ import { AuthController } from './presentation';
 		GuardsModule,
 	],
 	providers: [AuthService, AuthDomain, LocalStrategy, JwtStrategy],
-	exports: [AuthService],
+	exports: [AuthService, AuthDomain],
 	controllers: [AuthController],
 })
 export class AuthModule {}

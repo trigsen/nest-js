@@ -1,0 +1,1 @@
+export const AUTHOR_REPOSITORY_TOKEN = Symbol.for('AUTHOR_REPOSITORY_TOKEN');

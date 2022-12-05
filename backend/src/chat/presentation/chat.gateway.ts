@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Server, Socket } from 'socket.io';
 import {
 	MessageBody,
 	SubscribeMessage,
@@ -9,7 +8,10 @@ import {
 	WebSocketServer,
 	OnGatewayDisconnect, WsException,
 } from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
+
 import { ChatService } from '../application';
+import {ChatEvents} from "../core/constants";
 
 @Injectable()
 @WebSocketGateway({ cors: true })
@@ -20,23 +22,33 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	constructor(private chatService: ChatService) {}
 
 	async handleConnection(socket: Socket) {
-		await this.chatService.getUserFromSocket(socket);
+		try {
+			const user = await this.chatService.getUserFromSocket(socket);
+
+			if (user) {
+				const allMessages = await this.chatService.getAllMessages()
+				socket.emit(ChatEvents.RECEIVE_ALL_MESSAGES, { data: allMessages })
+			}
+		} catch(error) {
+			socket.emit(ChatEvents.REFUSED, { data: { error: error.message }})
+			socket.disconnect()
+		}
 	}
 
-	handleDisconnect(socket: Socket) {
-		console.log('disconnect', { socket });
+	handleDisconnect() {
+		console.log('disconnect');
 	}
 
-	@SubscribeMessage('send_message')
+	@SubscribeMessage(ChatEvents.SEND_MESSAGE)
 	async listenForMessages(
-		@MessageBody() message: string,
+		@MessageBody() newMessage: string,
 		@ConnectedSocket() socket: Socket
 	) {
 		const userFromSocket = await this.chatService.getUserFromSocket(socket);
 
 		if (userFromSocket) {
-
-			this.websocketServer.emit('receive_message', { data: { message, author: { username: userFromSocket.username }} });
+			const { id, message, author } = await this.chatService.addMessage(newMessage, userFromSocket.username)
+			this.websocketServer.emit(ChatEvents.RECEIVE_MESSAGE, { data: { id, author, message }});
 		}
 
 		throw new WsException("User doesn't exist")

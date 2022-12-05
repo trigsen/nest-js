@@ -20,12 +20,14 @@ export class UsersRepository implements UsersRepositoryInterface {
 	async findUserById(id: string) {
 		return this.userModel
 			.findOne({ id })
+			.lean()
 			.clone();
 	}
 
 	async findUserByUsername(username: string) {
 		return this.userModel
 			.findOne({ username })
+			.lean()
 			.exec();
 	}
 }

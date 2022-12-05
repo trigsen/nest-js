@@ -1,6 +1,6 @@
 export interface RegisterUserParameters {
-	username: string;
 	password: string;
+	username: string;
 }
 
 export interface LoginUserParameters {
@@ -8,11 +8,16 @@ export interface LoginUserParameters {
 }
 
 export interface ValidateUserParameters {
-	username: string;
 	password: string;
+	username: string;
 }
 
 export interface ValidateUserResult {
 	id: string;
 	username: string;
+}
+
+export interface ValidateTokenResult {
+	sub: string
+	username: string
 }

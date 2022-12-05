@@ -13,8 +13,13 @@ const handleSocketConnection = () => {
     })
 
     socket.on('receive_message', ({ data }) => {
-        console.log({ data })
+        console.log({ event: 'receive_message', data })
         handleNewMessage(data);
+    })
+
+    socket.on('receive_all_messages', ({ data }) => {
+        console.log({ event: 'receive_all_messages', data })
+        data.forEach(handleNewMessage)
     })
 }
 

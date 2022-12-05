@@ -1,28 +1,31 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { UserEntity, UserSchema } from '../users/infastructure';
+import {AuthModule} from "../auth/auth.module";
 import { UsersModule } from '../users/users.module';
 
 import { ChatService } from './application';
+import {AUTHOR_REPOSITORY_TOKEN} from "./core/tokens/author-repository.token";
 import { CHAT_REPOSITORY_TOKEN } from './core/tokens/chat-repository.token';
 import { ChatDomain } from './domain/chat.domain';
 import { MessageEntity, MessageSchema, ChatRepository } from './infastructure';
+import {AuthorEntity, AuthorSchema} from "./infastructure/entities/author.entity";
+import { AuthorRepository } from "./infastructure/repositories/author.repository";
 import { ChatGateway } from './presentation';
 
 @Module({
 	imports: [
 		MongooseModule.forFeature([
 			{ name: MessageEntity.name, schema: MessageSchema },
-			{ name: UserEntity.name, schema: UserSchema },
+			{ name: AuthorEntity.name, schema: AuthorSchema },
 		]),
 		UsersModule,
-		JwtModule,
+		AuthModule,
 	],
 	controllers: [],
 	providers: [
 		ChatGateway,
+		{ provide: AUTHOR_REPOSITORY_TOKEN, useClass: AuthorRepository },
 		{ provide: CHAT_REPOSITORY_TOKEN, useClass: ChatRepository },
 		ChatDomain,
 		ChatService,

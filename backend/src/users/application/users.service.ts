@@ -17,4 +17,8 @@ export class UsersService {
 	async getUserByUsername(username: string) {
 		return this.usersDomain.getUserByUsername(username);
 	}
+
+	async getUserByUsernameWithPassword(username: string) {
+		return this.usersDomain.getUserByUsernameWithPassword(username)
+	}
 }

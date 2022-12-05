@@ -15,10 +15,28 @@ export class UsersDomain {
 	}
 
 	async getUserById(id: string) {
-		return this.usersRepository.findUserById(id);
+		const user = await this.usersRepository.findUserById(id);
+
+		if (user) {
+			const { password, ...userWithoutPassword } = user
+			return userWithoutPassword
+		}
+
+		return null
 	}
 
 	async getUserByUsername(username: string) {
+		const user = await this.usersRepository.findUserByUsername(username)
+
+		if (user) {
+			const { password, ...userWithoutPassword } = user
+			return userWithoutPassword
+		}
+
+		return null
+	}
+
+	async getUserByUsernameWithPassword(username: string) {
 		return this.usersRepository.findUserByUsername(username);
 	}
 }
