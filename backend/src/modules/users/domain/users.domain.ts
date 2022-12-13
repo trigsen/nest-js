@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { USERS_REPOSITORY_TOKEN } from '../core/tokens';
-import { UsersRepository } from '../infastructure/repositories/users.repository';
+import { UsersRepository } from '../infastructure';
 
 @Injectable()
 export class UsersDomain {
@@ -15,25 +15,11 @@ export class UsersDomain {
 	}
 
 	async getUserById(id: string) {
-		const user = await this.usersRepository.findUserById(id);
-
-		if (user) {
-			const { password, ...userWithoutPassword } = user
-			return userWithoutPassword
-		}
-
-		return null
+		return this.usersRepository.findUserById(id);
 	}
 
 	async getUserByUsername(username: string) {
-		const user = await this.usersRepository.findUserByUsername(username)
-
-		if (user) {
-			const { password, ...userWithoutPassword } = user
-			return userWithoutPassword
-		}
-
-		return null
+		return this.usersRepository.findUserByUsername(username)
 	}
 
 	async getUserByUsernameWithPassword(username: string) {

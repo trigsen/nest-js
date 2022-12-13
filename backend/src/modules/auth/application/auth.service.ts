@@ -73,8 +73,7 @@ export class AuthService {
 			);
 
 			if (isTheSamePassword) {
-				const { password, ...userWithoutPassword } = user;
-				return userWithoutPassword;
+				return user;
 			}
 		}
 		return null;

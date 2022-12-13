@@ -20,9 +20,6 @@ import { UsersModule } from './modules/users/users.module';
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true, load: configuration, validate }),
 		MongooseModule.forRootAsync({ useClass: MongoConfigurationService }),
-		// MongooseModule.forRoot(
-		// 	'mongodb+srv://cluster0:cluster0Pass@cluster0.npduqgm.mongodb.net/nestjs-test',
-		// ),
 		AuthModule,
 		UsersModule,
 		ChatModule,
