@@ -1,6 +1,8 @@
 export interface JwtConfigurationInterface {
     jwt: {
-        expiringMs: number,
-        secret: string,
+        accessExpiringMs: number,
+        accessSecret: string,
+        refreshExpiringMs: number
+        refreshSecret: string,
     }
 }

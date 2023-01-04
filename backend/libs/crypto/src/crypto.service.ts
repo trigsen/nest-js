@@ -7,8 +7,12 @@ export class CryptoService {
 		return bcrypt.compare(plainPassword, encryptedPassword);
 	}
 
-	async encodePassword(password: string) {
-		const salt = bcrypt.genSaltSync();
+	async hashPassword(password: string) {
+		const salt = await bcrypt.genSalt();
 		return bcrypt.hash(password, salt);
+	}
+
+	async hashText(text: string) {
+		return bcrypt.hash(text, 10)
 	}
 }

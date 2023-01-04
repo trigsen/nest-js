@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
 import {GuardsModule} from "../../../libs/core/src/guards.module";
+import {JwtConfigurationService} from "../../config/jwt";
 import { UsersModule } from '../users/users.module';
 
 import { CryptoModule } from '@app/crypto';
@@ -10,7 +11,6 @@ import { CryptoModule } from '@app/crypto';
 import { JwtStrategy, LocalStrategy, AuthService } from './application';
 import { AuthDomain } from './domain';
 import { AuthController } from './presentation';
-import {JwtConfigurationService} from "../../config/jwt";
 
 @Module({
 	imports: [

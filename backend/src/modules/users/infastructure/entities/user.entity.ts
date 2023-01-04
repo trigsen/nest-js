@@ -7,6 +7,10 @@ export type UserDocument = HydratedDocument<UserEntity>;
 
 @Schema()
 export class UserEntity {
+	@Exclude()
+	@Prop({ required: false })
+	hashedRefreshToken: string
+
 	@Prop({ default: () => uuidV4() })
 	id: string;
 

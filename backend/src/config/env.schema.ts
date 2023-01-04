@@ -12,4 +12,10 @@ export class EnvironmentVariables {
 
     @IsNumber()
     PORT: number
+
+    @IsString()
+    REFRESH_TOKEN_EXPIRING_MS: string
+
+    @IsString()
+    REFRESH_TOKEN_SECRET_KEY: string
 }

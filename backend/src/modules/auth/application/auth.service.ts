@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {HttpException, Injectable} from '@nestjs/common';
 
 import { UsersService } from '../../users/application';
 import { AuthDomain } from '../domain';
@@ -20,6 +20,24 @@ export class AuthService {
 		private authDomain: AuthDomain
 	) {}
 
+	async generateTokens(id: string, username: string) {
+		const accessToken = await this.authDomain.generateAccessToken(
+			username,
+			id
+		);
+
+		const { refreshToken, cookie } = await this.authDomain.generateRefreshTokenWithCookie(username, id)
+
+		const hashedRefreshToken = await this.cryptoService.hashText(refreshToken)
+
+		const userWithUpdatedRefreshToken = await this.usersService.updateUser(id, { hashedRefreshToken })
+
+		console.log({ userWithUpdatedRefreshToken })
+
+		return { accessToken, cookie }
+	}
+
+
 	async login({ username }: LoginUserParameters) {
 		const user = await this.usersService.getUserByUsername(username);
 
@@ -27,14 +45,11 @@ export class AuthService {
 			throw new HttpException("User doesn't exist", 500);
 		}
 
-
-		const accessToken = await this.authDomain.generateAccessToken(
-			user.username,
-			user.id
-		);
+		const { accessToken, cookie } = await this.generateTokens(user.id, user.username)
 
 		return {
-			access_token: accessToken,
+			accessToken,
+			cookie,
 		};
 	}
 
@@ -44,20 +59,18 @@ export class AuthService {
 			throw new HttpException('User already exists', 500);
 		}
 
-		const encodedPassword = await this.cryptoService.encodePassword(password);
+		const encodedPassword = await this.cryptoService.hashPassword(password);
 
 		const { username: newUserName, id } = await this.usersService.createUser(
 			username,
 			encodedPassword
 		);
 
-		const accessToken = await this.authDomain.generateAccessToken(
-			newUserName,
-			id
-		);
+		const { accessToken, cookie } = await this.generateTokens(id, newUserName)
 
 		return {
-			access_token: accessToken,
+			accessToken,
+			cookie,
 		};
 	}
 

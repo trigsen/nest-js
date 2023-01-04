@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
+import {UserToUpdate} from "../../core/interfaces";
 import { UserDocument, UserEntity } from '../entities';
 import { UsersRepositoryInterface } from '../repository-interfaces';
 
@@ -29,5 +30,16 @@ export class UsersRepository implements UsersRepositoryInterface {
 			.findOne({ username })
 			.lean()
 			.exec();
+	}
+
+	async updateUser(id: string, updatedUser: UserToUpdate) {
+		return this.userModel.findOneAndUpdate({
+			id
+		}, {
+			...updatedUser
+		}, {
+			upsert: true,
+			new: true
+		}).lean().exec()
 	}
 }
