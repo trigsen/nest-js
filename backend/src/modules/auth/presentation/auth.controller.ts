@@ -1,9 +1,7 @@
-import {Body, Controller, Post, UseGuards, Req, InternalServerErrorException} from '@nestjs/common';
+import { Get, Body, Controller, Post, UseGuards, Req, InternalServerErrorException } from '@nestjs/common';
 import { Request } from 'express'
 
-import { AuthService } from '../application';
-
-import { LocalAuthGuard, Public } from '@app/core';
+import { AuthService, RefreshAuthGuard, LocalAuthGuard, Public } from '../application';
 
 import { LoginUserDto, RegisterUserDto } from './dtos';
 
@@ -26,6 +24,19 @@ export class AuthController {
 		return { access_token: accessToken }
 	}
 
+	@UseGuards(RefreshAuthGuard)
+	@Public()
+	@Get('refresh')
+	async refreshAccessToken(@Req() request: Request) {
+		const accessToken = await this.authService.refreshAccessToken(
+			request.user.id,
+			request.user.username,
+			request.cookies.Refresh
+		)
+
+		return { access_token: accessToken }
+	}
+
 	@Public()
 	@Post('register')
 	async register(@Req() request: Request, @Body() registerUserDto: RegisterUserDto) {
@@ -37,8 +48,6 @@ export class AuthController {
 
 		request.res.setHeader('Set-Cookie', cookie)
 
-		return { accessToken }
+		return { access_token: accessToken }
 	}
-
-	
 }

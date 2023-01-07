@@ -9,7 +9,7 @@ import {JwtConfigurationInterface} from "../../../../config/jwt";
 import { ValidateJwtStrategyResult } from './strategy.types';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class AccessJwtStrategy extends PassportStrategy(Strategy, 'jwt-access') {
 	constructor(private readonly configService: ConfigService<Config, true>) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

@@ -4,11 +4,8 @@ import { APP_GUARD } from "@nestjs/core";
 import { MongooseModule } from '@nestjs/mongoose';
 
 
-import { GuardsModule } from "../libs/core/src/guards.module";
-
-import { JwtAuthGuard } from "@app/core";
-
 import {configuration, MongoConfigurationService, validate} from "./config";
+import {JwtAuthGuard} from "./modules/auth/application";
 import { AuthModule } from './modules/auth/auth.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { UsersModule } from './modules/users/users.module';
@@ -23,7 +20,6 @@ import { UsersModule } from './modules/users/users.module';
 		AuthModule,
 		UsersModule,
 		ChatModule,
-		GuardsModule,
 	],
 	providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })

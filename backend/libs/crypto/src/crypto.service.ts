@@ -3,8 +3,8 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class CryptoService {
-	async comparePasswords(plainPassword: string, encryptedPassword: string) {
-		return bcrypt.compare(plainPassword, encryptedPassword);
+	async compareHashedText(plainText: string, hashedPassword: string) {
+		return bcrypt.compare(plainText, hashedPassword);
 	}
 
 	async hashPassword(password: string) {

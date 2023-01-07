@@ -4,11 +4,14 @@ import {UserToUpdate} from "../core/interfaces";
 import { USERS_REPOSITORY_TOKEN } from '../core/tokens';
 import {UsersRepository} from '../infastructure';
 
+import {CryptoService} from "@app/crypto";
+
 @Injectable()
 export class UsersDomain {
 	constructor(
 		@Inject(USERS_REPOSITORY_TOKEN)
-		private readonly usersRepository: UsersRepository
+		private readonly usersRepository: UsersRepository,
+		private readonly cryptoService: CryptoService,
 	) {}
 
 	async createUser(username: string, password: string) {
@@ -17,6 +20,20 @@ export class UsersDomain {
 
 	async getUserById(id: string) {
 		return this.usersRepository.findUserById(id);
+	}
+
+	async getUserByIdAndRefreshToken(refreshToken: string, userId: string) {
+		const user = await this.usersRepository.findUserById(userId)
+
+		if (!user) {
+			return null
+		}
+
+		const isRefreshTokenMatches = await this.cryptoService.compareHashedText(refreshToken, user.hashedRefreshToken)
+
+		console.log({ isRefreshTokenMatches, refreshToken, hashedRefreshToken: user.hashedRefreshToken })
+
+		return isRefreshTokenMatches ? user : null
 	}
 
 	async getUserByUsername(username: string) {

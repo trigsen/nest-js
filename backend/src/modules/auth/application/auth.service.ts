@@ -20,19 +20,21 @@ export class AuthService {
 		private authDomain: AuthDomain
 	) {}
 
-	async generateTokens(id: string, username: string) {
-		const accessToken = await this.authDomain.generateAccessToken(
+	async generateAccessToken(id: string, username: string) {
+		return this.authDomain.generateAccessToken(
 			username,
 			id
 		);
+	}
+
+	async generateTokens(id: string, username: string) {
+		const accessToken = await this.generateAccessToken(id, username)
 
 		const { refreshToken, cookie } = await this.authDomain.generateRefreshTokenWithCookie(username, id)
 
 		const hashedRefreshToken = await this.cryptoService.hashText(refreshToken)
 
-		const userWithUpdatedRefreshToken = await this.usersService.updateUser(id, { hashedRefreshToken })
-
-		console.log({ userWithUpdatedRefreshToken })
+		await this.usersService.updateUser(id, { hashedRefreshToken })
 
 		return { accessToken, cookie }
 	}
@@ -74,13 +76,23 @@ export class AuthService {
 		};
 	}
 
+	async refreshAccessToken(userId: string, username: string, refreshToken: string) {
+		const user = await this.usersService.getUserByIdAndRefreshToken(refreshToken, userId)
+
+		if (!user) {
+			throw new HttpException("User doesn't exist", 500);
+		}
+
+		return this.authDomain.generateAccessToken(username, userId)
+	}
+
 	async validateUser({
 		username,
 		password: userPassword,
 	}: ValidateUserParameters): Promise<ValidateUserResult | null> {
 		const user = await this.usersService.getUserByUsernameWithPassword(username);
 		if (user) {
-			const isTheSamePassword = await this.cryptoService.comparePasswords(
+			const isTheSamePassword = await this.cryptoService.compareHashedText(
 				userPassword,
 				user.password
 			);

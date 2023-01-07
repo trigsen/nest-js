@@ -15,6 +15,10 @@ export class UsersService {
 		return this.usersDomain.getUserById(id);
 	}
 
+	async getUserByIdAndRefreshToken(refreshToken: string, userId: string) {
+		return this.usersDomain.getUserByIdAndRefreshToken(refreshToken, userId)
+	}
+
 	async getUserByUsername(username: string) {
 		return this.usersDomain.getUserByUsername(username);
 	}
