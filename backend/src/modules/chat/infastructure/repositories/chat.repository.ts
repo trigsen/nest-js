@@ -1,30 +1,68 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {Document, Model} from 'mongoose';
+import {Injectable} from '@nestjs/common';
+import {InjectModel} from '@nestjs/mongoose';
+import {Model} from 'mongoose';
 
-import { UserEntity } from '../../../users/infastructure';
-import { MessageDocument, MessageEntity } from '../entities';
-import {AuthorDocument, AuthorEntity} from "../entities/author.entity";
-import { ChatRepositoryInterface } from '../repository-interfaces';
+import {MessageDocument, MessageEntity} from '../entities';
+import {RoomDocument, RoomEntity} from "../entities/room.entity";
+import {ChatRepositoryInterface} from '../repository-interfaces';
 
+// @ TODO split to two repositories - room and message
+// @ TODO remove from response _v and _id properties
 @Injectable()
 export class ChatRepository implements ChatRepositoryInterface {
 	constructor(
 		@InjectModel(MessageEntity.name)
 		private messageModel: Model<MessageDocument>,
-		@InjectModel(AuthorEntity.name) private authorModel: Model<AuthorDocument>
+		@InjectModel(RoomEntity.name) private roomModel: Model<RoomDocument>,
 	) {}
 
-	async addMessage(message: string, author: AuthorEntity) {
-		const createdMessage = await new this.messageModel({
+	async addMessageInRoom(message: string, author: string, roomId: string) {
+		const newMessage = await new this.messageModel({
 			message,
 			author,
-		}).save();
+			roomId,
+		}).save()
 
-		return createdMessage.populate({ path: 'author', model: this.authorModel.modelName })
+		await this.roomModel.findOneAndUpdate(
+			{ id: roomId },
+			{ $push: { messages: newMessage._id }},
+			{ new: true, useFindAndModify: false }
+		)
+
+		return newMessage
 	}
 
-	async getAllMessages() {
-		return this.messageModel.find().populate('author', undefined, this.authorModel.modelName).lean().exec()
+	async createRoom(hostname: string, roomName: string) {
+		const createdRoom = await new this.roomModel({
+			host: hostname,
+			roomName
+		}).save()
+
+		return createdRoom.populate({ path: 'messages', model: this.messageModel.modelName })
+	}
+
+	async getAllMessagesInRoom(roomId: string) {
+		// return this.messageModel.find().populate('author', undefined, this.userModel.modelName).lean().exec()
+
+		const room = await this.roomModel.findOne({ id: roomId }).populate(
+			'messages',
+			undefined,
+			this.messageModel.modelName,
+			).lean().exec()
+
+		console.log({ room })
+
+		if (!room) {
+			return []
+		}
+
+		return room.messages
+	}
+
+	async getRooms() {
+		return this.roomModel.find()
+			.populate('messages', undefined, this.messageModel.modelName)
+			.lean()
+			.exec()
 	}
 }

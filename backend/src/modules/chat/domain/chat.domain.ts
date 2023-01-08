@@ -4,10 +4,8 @@ import { Socket } from 'socket.io';
 
 import {AuthDomain} from "../../auth/domain";
 import { UsersDomain } from '../../users/domain';
-import {AUTHOR_REPOSITORY_TOKEN} from "../core/tokens/author-repository.token";
 import {CHAT_REPOSITORY_TOKEN} from "../core/tokens/chat-repository.token";
 import {ChatRepository} from "../infastructure";
-import {AuthorRepository} from "../infastructure/repositories/author.repository";
 
 @Injectable()
 export class ChatDomain {
@@ -16,24 +14,21 @@ export class ChatDomain {
 		private usersDomain: UsersDomain,
 		@Inject(CHAT_REPOSITORY_TOKEN)
 		private chatRepository: ChatRepository,
-		@Inject(AUTHOR_REPOSITORY_TOKEN)
-		private authorRepository: AuthorRepository,
 	) {}
 
-	async addMessage(message: string, authorName: string) {
-		const alreadyExistingAuthor = await this.authorRepository.findAuthorByUsername(authorName)
-
-		if (alreadyExistingAuthor) {
-			return this.chatRepository.addMessage(message, alreadyExistingAuthor)
-		}
-
-		const newAuthor = await this.authorRepository.addAuthor(authorName)
-
-		return this.chatRepository.addMessage(message, newAuthor)
+	async addMessage(message: string, authorName: string, roomId: string) {
+		return this.chatRepository.addMessageInRoom(message, authorName, roomId)
 	}
 
-	async getAllMessages() {
-		return this.chatRepository.getAllMessages()
+	async createRoom(username: string, roomName: string) {
+		const room = await this.chatRepository.createRoom(username, roomName)
+		console.log({ room })
+
+		return room
+	}
+
+	async getAllMessages(roomId: string) {
+		return this.chatRepository.getAllMessagesInRoom(roomId)
 	}
 
 	async getUserFromSocket(socket: Socket) {
@@ -50,5 +45,9 @@ export class ChatDomain {
 		}
 
 		throw new WsException('Invalid credentials.');
+	}
+
+	async getRooms() {
+		return this.chatRepository.getRooms()
 	}
 }
