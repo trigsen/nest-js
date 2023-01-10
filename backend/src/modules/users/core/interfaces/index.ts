@@ -1,3 +1,3 @@
-import { UserEntity } from "../../infastructure";
+import { UserEntity } from '../../infastructure';
 
-export type UserToUpdate = Partial<Omit<UserEntity, 'id'>>
+export type UserToUpdate = Partial<Omit<UserEntity, 'id'>>;

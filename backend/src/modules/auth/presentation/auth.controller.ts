@@ -1,7 +1,20 @@
-import { Get, Body, Controller, Post, UseGuards, Req, InternalServerErrorException } from '@nestjs/common';
-import { Request } from 'express'
+import {
+	Get,
+	Body,
+	Controller,
+	Post,
+	UseGuards,
+	Req,
+	InternalServerErrorException,
+} from '@nestjs/common';
+import { Request } from 'express';
 
-import { AuthService, RefreshAuthGuard, LocalAuthGuard, Public } from '../application';
+import {
+	AuthService,
+	RefreshAuthGuard,
+	LocalAuthGuard,
+	Public,
+} from '../application';
 
 import { LoginUserDto, RegisterUserDto } from './dtos';
 
@@ -14,14 +27,14 @@ export class AuthController {
 	@Post('login')
 	async login(@Req() request: Request, @Body() loginUserDto: LoginUserDto) {
 		if (!request.res) {
-			throw new InternalServerErrorException()
+			throw new InternalServerErrorException();
 		}
 
 		const { accessToken, cookie } = await this.authService.login(loginUserDto);
 
-		request.res.setHeader('Set-Cookie', cookie)
+		request.res.setHeader('Set-Cookie', cookie);
 
-		return { access_token: accessToken }
+		return { access_token: accessToken };
 	}
 
 	@UseGuards(RefreshAuthGuard)
@@ -32,22 +45,27 @@ export class AuthController {
 			request.user.id,
 			request.user.username,
 			request.cookies.Refresh
-		)
+		);
 
-		return { access_token: accessToken }
+		return { access_token: accessToken };
 	}
 
 	@Public()
 	@Post('register')
-	async register(@Req() request: Request, @Body() registerUserDto: RegisterUserDto) {
+	async register(
+		@Req() request: Request,
+		@Body() registerUserDto: RegisterUserDto
+	) {
 		if (!request.res) {
-			throw new InternalServerErrorException()
+			throw new InternalServerErrorException();
 		}
 
-		const { accessToken, cookie } = await this.authService.register(registerUserDto);
+		const { accessToken, cookie } = await this.authService.register(
+			registerUserDto
+		);
 
-		request.res.setHeader('Set-Cookie', cookie)
+		request.res.setHeader('Set-Cookie', cookie);
 
-		return { access_token: accessToken }
+		return { access_token: accessToken };
 	}
 }

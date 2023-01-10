@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import {CryptoModule} from "@app/crypto";
+import { CryptoModule } from '@app/crypto';
 
 import { UsersService } from './application';
 import { USERS_REPOSITORY_TOKEN } from './core/tokens';

@@ -1,1 +1,1 @@
-export * from './chat-events.constants'
+export * from './chat-events.constants';

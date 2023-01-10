@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import {UserToUpdate} from "../core/interfaces";
+import { UserToUpdate } from '../core/interfaces';
 import { UsersDomain } from '../domain';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class UsersService {
 	}
 
 	async getUserByIdAndRefreshToken(refreshToken: string, userId: string) {
-		return this.usersDomain.getUserByIdAndRefreshToken(refreshToken, userId)
+		return this.usersDomain.getUserByIdAndRefreshToken(refreshToken, userId);
 	}
 
 	async getUserByUsername(username: string) {
@@ -24,10 +24,10 @@ export class UsersService {
 	}
 
 	async getUserByUsernameWithPassword(username: string) {
-		return this.usersDomain.getUserByUsernameWithPassword(username)
+		return this.usersDomain.getUserByUsernameWithPassword(username);
 	}
 
 	async updateUser(id: string, updatedUser: UserToUpdate) {
-		return this.usersDomain.updateUser(id, updatedUser)
+		return this.usersDomain.updateUser(id, updatedUser);
 	}
 }

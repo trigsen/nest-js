@@ -1,5 +1,5 @@
 export interface ApplicationConfigurationInterface {
-    application: {
-        port: number
-    }
+	application: {
+		port: number;
+	};
 }

@@ -1,7 +1,8 @@
-import {ApplicationConfigurationInterface} from "./application-configuration.interfaces";
+import { ApplicationConfigurationInterface } from './application-configuration.interfaces';
 
-export const applicationConfiguration = (): ApplicationConfigurationInterface => ({
-    application: {
-        port: parseInt(process.env.PORT!, 10),
-    }
-})
+export const applicationConfiguration =
+	(): ApplicationConfigurationInterface => ({
+		application: {
+			port: parseInt(process.env.PORT!, 10),
+		},
+	});

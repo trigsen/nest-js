@@ -4,20 +4,46 @@ const SOCKET_EVENTS = {
     RECEIVE_ALL_MESSAGES: 'receive_all_messages',
     REFUSED: 'refused',
     JOIN_ROOM: 'join_room',
+    EXIT_ROOM: 'exit_room',
     USER_CONNECTED_TO_ROOM: 'user-connected-to-room',
     USER_DISCONNECTED_FROM_ROOM: 'user_disconnected_from_room'
 }
 
 let socket;
+const myPeer = new Peer()
+let currentPeerUserId = ''
+let mediaStream;
+
+myPeer.on('open', (peerUserId) => {
+    currentPeerUserId = peerUserId
+})
+
+myPeer.on('call', call => {
+    call.answer(mediaStream)
+    const video = document.createElement('video')
+    call.on('stream', userVideoStream => {
+        addVideoStream(video, userVideoStream)
+    })
+
+    call.on('close', () => {
+        video.remove()
+    })
+    peers[call.peer] = call
+})
 
 const textInput = document.getElementById('textInput');
 const messagesList = document.getElementById('messages');
 const roomsList = document.getElementById('roomsList');
+const videoGrid = document.getElementById('video-grid');
+
 let currentRoom = ''
 
-const handleSocketConnection = () => {
+const myVideo = document.createElement('video')
+myVideo.muted = true
+const peers = {}
+
+const handleSocketConnection = async () => {
     const tokenInput = document.getElementById("token")
-    console.log({ tokenInput: tokenInput, tokenValue: tokenInput.value })
     socket = io("http://localhost:3000", {
         extraHeaders: {
             Authorization: `Bearer ${tokenInput.value}`
@@ -25,14 +51,10 @@ const handleSocketConnection = () => {
     })
 
     socket.on(SOCKET_EVENTS.RECEIVE_MESSAGE, ({ data }) => {
-        console.log({ event: 'receive_message', data })
-
         handleNewMessage(data.author, data.message);
     })
 
     socket.on(SOCKET_EVENTS.RECEIVE_ALL_MESSAGES, ({ data }) => {
-        console.log({ event: 'receive_all_messages', data })
-
         while (messagesList.firstChild) {
             messagesList.removeChild(messagesList.lastChild)
         }
@@ -40,8 +62,14 @@ const handleSocketConnection = () => {
         data.forEach(({ message, author}) => handleNewMessage(author, message))
     })
 
-    socket.on(SOCKET_EVENTS.USER_CONNECTED_TO_ROOM, () => {
-        console.log('USER_CONNECTED_TO_ROOM')
+    socket.on(SOCKET_EVENTS.USER_DISCONNECTED_FROM_ROOM, (peerUserId) => {
+        if (peers[peerUserId]) {
+            peers[peerUserId].close()
+        }
+    })
+
+    socket.on(SOCKET_EVENTS.USER_CONNECTED_TO_ROOM, (peerUserId) => {
+        connectToNewUser(peerUserId, mediaStream)
     })
 }
 
@@ -59,10 +87,24 @@ const createMessage = (author, message) => {
     return li;
 }
 
-const handleClickRoom = (roomId) => {
+const handleClickRoom = async (roomId) => {
+    if (!mediaStream) {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true
+        })
+    }
+
+    if (currentRoom && currentPeerUserId) {
+        socket.emit(SOCKET_EVENTS.EXIT_ROOM, { peerUserId: currentPeerUserId, roomId: currentRoom })
+        Object.values(peers).forEach(call => call.close())
+    }
+
+    socket.emit(SOCKET_EVENTS.JOIN_ROOM, { peerUserId: currentPeerUserId, roomId })
+
     currentRoom = roomId
-    console.log({ roomId })
-    socket?.emit(SOCKET_EVENTS.JOIN_ROOM, { roomId })
+
+    addVideoStream(myVideo, mediaStream)
 }
 
 const handleClickGetRooms = async () => {
@@ -76,7 +118,6 @@ const handleClickGetRooms = async () => {
     const data = await allRooms.json()
 
     data.rooms.forEach(room => {
-        console.log({ room })
         const button = document.createElement('button')
         button.appendChild(document.createTextNode(room.roomName))
         button.onclick = () => {
@@ -84,4 +125,26 @@ const handleClickGetRooms = async () => {
         }
         roomsList.appendChild(button)
     })
+}
+
+function connectToNewUser(peerUserId, stream) {
+    const call = myPeer.call(peerUserId, stream)
+    const video = document.createElement('video')
+
+    call.on('stream', userVideoStream => {
+        addVideoStream(video, userVideoStream)
+    })
+    call.on('close', () => {
+        video.remove()
+    })
+
+    peers[peerUserId] = call
+}
+
+function addVideoStream(video, stream) {
+    video.srcObject = stream
+    video.addEventListener('loadedmetadata', () => {
+        video.play()
+    })
+    videoGrid.append(video)
 }

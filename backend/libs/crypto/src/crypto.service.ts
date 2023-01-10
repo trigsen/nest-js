@@ -13,6 +13,6 @@ export class CryptoService {
 	}
 
 	async hashText(text: string) {
-		return bcrypt.hash(text, 10)
+		return bcrypt.hash(text, 10);
 	}
 }

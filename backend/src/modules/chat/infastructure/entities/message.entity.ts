@@ -14,9 +14,6 @@ export class MessageEntity {
 
 	@Prop()
 	message: string;
-
-	@Prop({ required: true })
-	roomId: string
 }
 
 export const MessageSchema = SchemaFactory.createForClass(MessageEntity);

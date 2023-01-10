@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import {Exclude} from "class-transformer";
+import { Exclude } from 'class-transformer';
 import { HydratedDocument } from 'mongoose';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -9,7 +9,7 @@ export type UserDocument = HydratedDocument<UserEntity>;
 export class UserEntity {
 	@Exclude()
 	@Prop({ required: false })
-	hashedRefreshToken: string
+	hashedRefreshToken: string;
 
 	@Prop({ default: () => uuidV4() })
 	id: string;

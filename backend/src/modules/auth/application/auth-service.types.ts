@@ -18,6 +18,6 @@ export interface ValidateUserResult {
 }
 
 export interface ValidateTokenResult {
-	sub: string
-	username: string
+	sub: string;
+	username: string;
 }

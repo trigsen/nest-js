@@ -1,5 +1,5 @@
 export interface MongoConfigurationInterface {
-    mongo: {
-        connectUrl: string
-    }
+	mongo: {
+		connectUrl: string;
+	};
 }
