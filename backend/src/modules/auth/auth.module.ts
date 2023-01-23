@@ -24,7 +24,7 @@ import { AuthController } from './presentation';
 	imports: [
 		UsersModule,
 		PassportModule,
-		JwtModule.registerAsync({ useClass: JwtConfigurationService }),
+		// JwtModule.registerAsync({ useClass: JwtConfigurationService }),
 		JwtModule.registerAsync({ useClass: JwtRefreshConfigurationService }),
 		CryptoModule,
 	],

@@ -1,13 +1,15 @@
-version: '3.4'
+version: '3.5'
 
 services:
   dev:
     image: nestjs_test
     build:
-      context: ..
+      context: .
       dockerfile: Dockerfile
     ports:
       - 3000:3000
+    env_file:
+      - .env
     depends_on:
       - mongodb
   mongodb:
